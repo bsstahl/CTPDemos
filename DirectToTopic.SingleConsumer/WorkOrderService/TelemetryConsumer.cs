@@ -28,8 +28,12 @@ public class TelemetryConsumer(
                 var telemetry = JsonSerializer.Deserialize<BusTelemetry>(result.Message.Value);
                 if (telemetry is null) continue;
 
-                var path = await writer.WriteAsync(WorkOrderFactory.Create(telemetry), ct);
-                logger.LogInformation("Created work order {Path}", path);
+                var workOrder = WorkOrderFactory.Create(telemetry);
+                var path = await writer.WriteAsync(workOrder, ct);
+                if (path is null)
+                    logger.LogInformation("Skipping duplicate work order {WorkOrderId}", workOrder.WorkOrderId);
+                else
+                    logger.LogInformation("Created work order {Path}", path);
                 consumer.StoreOffset(result);
             }
             catch (OperationCanceledException) { break; }

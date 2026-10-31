@@ -10,10 +10,11 @@ public class WorkOrderWriter(string directory)
         .WithNamingConvention(CamelCaseNamingConvention.Instance)
         .Build();
 
-    public async Task<string> WriteAsync(WorkOrder order, CancellationToken ct)
+    public async Task<string?> WriteAsync(WorkOrder order, CancellationToken ct)
     {
         Directory.CreateDirectory(directory);
         var path = Path.Combine(directory, $"{order.WorkOrderId}.yaml");
+        if (File.Exists(path)) return null;
 
         var sb = new StringBuilder()
             .AppendLine($"# Bus maintenance work order {order.WorkOrderId}")
