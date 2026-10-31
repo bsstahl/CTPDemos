@@ -6,6 +6,7 @@ var workOrderDir = Path.GetFullPath(Path.Combine(builder.AppHostDirectory, "..",
 var kafka = builder.AddKafka("kafka")
     // Keep demo topic records for six hours; production should retain them longer to maintain idempotence.
     .WithEnvironment("KAFKA_LOG_RETENTION_HOURS", "6")
+    .WithDataVolume("ctpdemos-kafka-data")
     .WithKafkaUI(); // Browse the topic and publish sample telemetry from the browser
 
 builder.AddProject<Projects.WorkOrderService>("work-order-service")

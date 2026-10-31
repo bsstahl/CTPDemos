@@ -12,6 +12,11 @@ Open the Aspire dashboard, then open Kafka UI and produce a message to `bus-tele
 
 A file such as `DirectToTopic.SingleConsumer/work-orders/WO-B-42-20260115083000.yaml` appears. The telemetry producer is outside this demo's scope.
 
+## Kafka data
+Kafka data is stored in the Docker volume `ctpdemos-kafka-data`, so topics and messages persist between runs. Remove the volume manually when you no longer need this data:
+
+    docker volume rm ctpdemos-kafka-data
+
 ## Message contract
 The telemetry contract is documented in [asyncapi.yaml](asyncapi.yaml) (AsyncAPI 3.0): topic `bus-telemetry`,
 JSON payload. A sample message, also included in that document:
