@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/DirectToTopic.SingleConsumer/">
+    <Project Path="DirectToTopic.SingleConsumer/AppHost/AppHost.csproj" />
+    <Project Path="DirectToTopic.SingleConsumer/WorkOrderService/WorkOrderService.csproj" />
+  </Folder>
+</Solution>
