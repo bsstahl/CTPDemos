@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Confluent.Kafka;
+using Confluent.Kafka.Admin;
 
 namespace WorkOrderService;
 
@@ -15,6 +16,26 @@ public class TelemetryConsumer(
     private async Task RunAsync(CancellationToken ct)
     {
         var topic = config["Telemetry:Topic"] ?? "bus-telemetry";
+        using (var adminClient = new AdminClientBuilder(new AdminClientConfig
+        {
+            BootstrapServers = config.GetConnectionString("kafka")
+                ?? throw new InvalidOperationException("Kafka connection string is unavailable")
+        }).Build())
+        {
+            try
+            {
+                await adminClient.CreateTopicsAsync([
+                    new TopicSpecification { Name = topic, NumPartitions = 1, ReplicationFactor = 1 }
+                ]);
+            }
+            catch (CreateTopicsException ex) when (
+                ex.Results.Count > 0
+                && ex.Results.All(result => result.Error.Code == ErrorCode.TopicAlreadyExists))
+            {
+                logger.LogDebug("Kafka topic {Topic} already exists", topic);
+            }
+        }
+
         consumer.Subscribe(topic);
         logger.LogInformation("Listening for bus telemetry on topic {Topic}", topic);
 
