@@ -30,6 +30,7 @@ public class TelemetryConsumer(
 
                 var path = await writer.WriteAsync(WorkOrderFactory.Create(telemetry), ct);
                 logger.LogInformation("Created work order {Path}", path);
+                consumer.StoreOffset(result);
             }
             catch (OperationCanceledException) { break; }
             catch (Exception ex) when (ex is JsonException or ConsumeException)

@@ -8,6 +8,7 @@ builder.AddKafkaConsumer<string, string>("kafka", settings =>
     settings.Config.GroupId = "work-order-service";
     settings.Config.AutoOffsetReset = Confluent.Kafka.AutoOffsetReset.Earliest;
     settings.Config.AllowAutoCreateTopics = true;
+    settings.Config.EnableAutoOffsetStore = false;
 });
 
 builder.Services.AddSingleton(sp =>
