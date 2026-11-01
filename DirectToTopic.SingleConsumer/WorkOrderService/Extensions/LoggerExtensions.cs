@@ -22,4 +22,12 @@ internal static partial class LoggerExtensions
 
     [LoggerMessage(7, LogLevel.Warning, "Skipping unprocessable message")]
     internal static partial void SkippingUnprocessableMessage(this ILogger logger, Exception exception);
+
+    [LoggerMessage(8, LogLevel.Error, "Failed to write work order {WorkOrderId} for alert {AlertId} to {Path}")]
+    internal static partial void WorkOrderWriteFailed(
+        this ILogger logger,
+        Exception exception,
+        string workOrderId,
+        Guid alertId,
+        string path);
 }

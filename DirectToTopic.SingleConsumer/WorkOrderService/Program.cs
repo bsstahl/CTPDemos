@@ -10,8 +10,9 @@ builder.AddKafkaConsumer<string, string>("kafka", settings =>
     settings.Config.EnableAutoOffsetStore = false;
 });
 
-builder.Services.AddSingleton(sp =>
-    new WorkOrderService.Services.WorkOrderWriter(builder.Configuration["WorkOrders:Directory"] ?? "work-orders"));
+builder.Services.AddSingleton(sp => new WorkOrderService.Services.WorkOrderWriter(
+    builder.Configuration["WorkOrders:Directory"] ?? "work-orders",
+    sp.GetRequiredService<ILogger<WorkOrderService.Services.WorkOrderWriter>>()));
 builder.Services.AddHostedService<WorkOrderService.TelemetryConsumer>();
 
 builder.Build().Run();
