@@ -3,9 +3,8 @@ using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using WorkOrderService.Extensions;
 using WorkOrderService.Messages;
-using WorkOrderService.Services;
 
-namespace WorkOrderService;
+namespace WorkOrderService.Services;
 
 internal sealed class TelemetryConsumer(
     IConsumer<string, string> consumer,
