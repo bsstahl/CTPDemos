@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
+using WorkOrderService.Extensions;
 using WorkOrderService.Messages;
 using WorkOrderService.Services;
 
@@ -34,12 +35,12 @@ internal sealed class TelemetryConsumer(
                 ex.Results.Count > 0
                 && ex.Results.All(result => result.Error.Code == ErrorCode.TopicAlreadyExists))
             {
-                logger.LogDebug("Kafka topic {Topic} already exists", topic);
+                logger.KafkaTopicAlreadyExists(topic);
             }
         }
 
         consumer.Subscribe(topic);
-        logger.LogInformation("Listening for bus telemetry on topic {Topic}", topic);
+        logger.ListeningForBusTelemetry(topic);
 
         while (!ct.IsCancellationRequested)
         {
@@ -50,7 +51,7 @@ internal sealed class TelemetryConsumer(
 
                 if (result.Message.Value is null)
                 {
-                    logger.LogWarning("Skipping Kafka tombstone message");
+                    logger.SkippingTombstoneMessage();
                     consumer.StoreOffset(result);
                     continue;
                 }
@@ -58,7 +59,7 @@ internal sealed class TelemetryConsumer(
                 var telemetry = JsonSerializer.Deserialize<BusTelemetry>(result.Message.Value);
                 if (telemetry is null)
                 {
-                    logger.LogWarning("Skipping empty telemetry payload");
+                    logger.SkippingEmptyTelemetryPayload();
                     consumer.StoreOffset(result);
                     continue;
                 }
@@ -66,15 +67,15 @@ internal sealed class TelemetryConsumer(
                 var workOrder = WorkOrderFactory.Create(telemetry);
                 var path = await writer.WriteAsync(workOrder, ct).ConfigureAwait(false);
                 if (path is null)
-                    logger.LogInformation("Skipping duplicate alert {AlertId}", telemetry.AlertId);
+                    logger.SkippingDuplicateAlert(telemetry.AlertId);
                 else
-                    logger.LogInformation("Created work order {Path}", path);
+                    logger.CreatedWorkOrder(path);
                 consumer.StoreOffset(result);
             }
             catch (OperationCanceledException) { break; }
             catch (Exception ex) when (ex is JsonException or ConsumeException)
             {
-                logger.LogWarning(ex, "Skipping unprocessable message");
+                logger.SkippingUnprocessableMessage(ex);
             }
         }
         consumer.Close();
