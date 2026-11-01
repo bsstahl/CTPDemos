@@ -12,10 +12,12 @@ Open the Aspire dashboard, then open Kafka UI and produce a message to `bus-tele
 
 A file such as `DirectToTopic.SingleConsumer/work-orders/Alert-6ba7b8109dad11d180b400c04fd430c8.yaml` appears. The telemetry producer is outside this demo's scope.
 
-## Kafka data
-Kafka data is stored in the Docker volume `ctpdemos-kafka-data`, so topics and messages persist between runs. Remove the volume manually when you no longer need this data:
+## Kafka container
+The Kafka container uses Aspire's persistent lifetime, so it remains running when the AppHost stops and is reused on later runs. This preserves the container, not its data independently of that container; removing or recreating it may lose its topics and messages.
 
-    docker volume rm ctpdemos-kafka-data
+When you no longer need it, find the Kafka container with `docker ps -a` (or `podman ps -a`) and remove it manually:
+
+    docker rm -f <container-id-or-name>
 
 ## Message contract
 The telemetry contract is documented in [asyncapi.yaml](asyncapi.yaml) (AsyncAPI 3.0): topic `bus-telemetry`,
