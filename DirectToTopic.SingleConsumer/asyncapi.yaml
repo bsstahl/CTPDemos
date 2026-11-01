@@ -43,6 +43,7 @@ components:
         - name: OverheatingWithFault
           summary: Hot engine, worn brake pads and a fault code; produces an Urgent work order.
           payload:
+            alertId: 6ba7b810-9dad-11d1-80b4-00c04fd430c8
             busId: B-42
             timestamp: '2026-01-15T08:30:00Z'
             odometerKm: 182340.5
@@ -53,6 +54,7 @@ components:
         - name: Healthy
           summary: No findings; produces a Routine inspection work order.
           payload:
+            alertId: 6ba7b811-9dad-11d1-80b4-00c04fd430c8
             busId: B-07
             timestamp: '2026-01-15T09:00:00Z'
             odometerKm: 45210
@@ -61,8 +63,12 @@ components:
   schemas:
     BusTelemetry:
       type: object
-      required: [busId, timestamp, odometerKm, engineTempC, brakePadThicknessMm]
+      required: [alertId, busId, timestamp, odometerKm, engineTempC, brakePadThicknessMm]
       properties:
+        alertId:
+          type: string
+          format: uuid
+          description: Unique internal-system alert identifier, reused when retrying the same alert to prevent duplicate work orders.
         busId:
           type: string
           description: Unique identifier of the bus.

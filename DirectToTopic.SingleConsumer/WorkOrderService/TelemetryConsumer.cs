@@ -52,7 +52,7 @@ public class TelemetryConsumer(
                 var workOrder = WorkOrderFactory.Create(telemetry);
                 var path = await writer.WriteAsync(workOrder, ct);
                 if (path is null)
-                    logger.LogInformation("Skipping duplicate work order {WorkOrderId}", workOrder.WorkOrderId);
+                    logger.LogInformation("Skipping duplicate alert {AlertId}", telemetry.AlertId);
                 else
                     logger.LogInformation("Created work order {Path}", path);
                 consumer.StoreOffset(result);

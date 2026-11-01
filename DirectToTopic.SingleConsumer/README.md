@@ -8,9 +8,9 @@ Requires the .NET 10 SDK and a container runtime (Docker/Podman).
 
     dotnet run --project DirectToTopic.SingleConsumer/AppHost
 
-Open the Aspire dashboard, then open Kafka UI and produce a message to `bus-telemetry` (see the contract below).
+Open the Aspire dashboard, then open Kafka UI and produce a message to `bus-telemetry` (see the contract below). The producer sends the internal alert's stable `alertId` GUID, not a WorkOrderId; reuse the same alert ID on retries so the service creates at most one work order for that alert.
 
-A file such as `DirectToTopic.SingleConsumer/work-orders/WO-B-42-20260115083000.yaml` appears. The telemetry producer is outside this demo's scope.
+A file such as `DirectToTopic.SingleConsumer/work-orders/Alert-6ba7b8109dad11d180b400c04fd430c8.yaml` appears. The telemetry producer is outside this demo's scope.
 
 ## Kafka data
 Kafka data is stored in the Docker volume `ctpdemos-kafka-data`, so topics and messages persist between runs. Remove the volume manually when you no longer need this data:
@@ -21,6 +21,6 @@ Kafka data is stored in the Docker volume `ctpdemos-kafka-data`, so topics and m
 The telemetry contract is documented in [asyncapi.yaml](asyncapi.yaml) (AsyncAPI 3.0): topic `bus-telemetry`,
 JSON payload. A sample message, also included in that document:
 
-    {"busId":"B-42","timestamp":"2026-01-15T08:30:00Z","odometerKm":182340.5,"engineTempC":115,"brakePadThicknessMm":3.2,"faultCodes":["P0217"]}
+    {"alertId":"6ba7b810-9dad-11d1-80b4-00c04fd430c8","busId":"B-42","timestamp":"2026-01-15T08:30:00Z","odometerKm":182340.5,"engineTempC":115,"brakePadThicknessMm":3.2,"faultCodes":["P0217"]}
 
 The consumer-side model is `WorkOrderService/BusTelemetry.cs`; keep it in sync with the document.

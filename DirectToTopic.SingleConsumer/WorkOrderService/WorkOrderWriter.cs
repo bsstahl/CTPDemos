@@ -13,8 +13,9 @@ public class WorkOrderWriter(string directory)
     public async Task<string?> WriteAsync(WorkOrder order, CancellationToken ct)
     {
         Directory.CreateDirectory(directory);
-        var path = Path.Combine(directory, $"{order.WorkOrderId}.yaml");
+        var path = Path.Combine(directory, $"Alert-{order.SourceTelemetry.AlertId:N}.yaml");
         if (File.Exists(path)) return null;
+        var temporaryPath = Path.Combine(directory, $".{Guid.NewGuid():N}.tmp");
 
         var sb = new StringBuilder()
             .AppendLine($"# Bus maintenance work order {order.WorkOrderId}")
@@ -23,7 +24,22 @@ public class WorkOrderWriter(string directory)
             .AppendLine("# 'sourceTelemetry' is the unmodified data that triggered this order.")
             .Append(_serializer.Serialize(order));
 
-        await File.WriteAllTextAsync(path, sb.ToString(), ct);
-        return path;
+        try
+        {
+            await File.WriteAllTextAsync(temporaryPath, sb.ToString(), ct);
+            try
+            {
+                File.Move(temporaryPath, path);
+                return path;
+            }
+            catch (IOException) when (File.Exists(path))
+            {
+                return null;
+            }
+        }
+        finally
+        {
+            if (File.Exists(temporaryPath)) File.Delete(temporaryPath);
+        }
     }
 }

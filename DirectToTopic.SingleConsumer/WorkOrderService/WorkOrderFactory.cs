@@ -12,6 +12,6 @@ public static class WorkOrderFactory
         foreach (var code in t.FaultCodes ?? []) { tasks.Add($"Diagnose fault code {code}"); if (priority == "Routine") priority = "High"; }
         if (tasks.Count == 0) tasks.Add("Perform scheduled inspection");
 
-        return new WorkOrder($"WO-{t.BusId}-{t.Timestamp:yyyyMMddHHmmss}", t.BusId, DateTimeOffset.UtcNow, priority, tasks, t);
+        return new WorkOrder($"WO-{Guid.NewGuid():N}", t.BusId, DateTimeOffset.UtcNow, priority, tasks, t);
     }
 }
