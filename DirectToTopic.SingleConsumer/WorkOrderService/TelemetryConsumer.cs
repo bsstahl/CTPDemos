@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
+using WorkOrderService.Messages;
 
 namespace WorkOrderService;
 

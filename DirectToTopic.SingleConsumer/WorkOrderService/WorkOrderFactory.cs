@@ -1,3 +1,5 @@
+using WorkOrderService.Messages;
+
 namespace WorkOrderService;
 
 public static class WorkOrderFactory

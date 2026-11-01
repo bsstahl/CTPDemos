@@ -1,6 +1,7 @@
 using System.Text;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using WorkOrderService.Messages;
 
 namespace WorkOrderService;
 

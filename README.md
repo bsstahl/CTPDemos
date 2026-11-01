@@ -8,6 +8,6 @@ Demos are orchestrated with [.NET Aspire](https://aspire.dev), so you can run on
 
 ## Demos
 
-| Demo | Description |
-|------|-------------|
-| [DirectToTopic.SingleConsumer](DirectToTopic.SingleConsumer/README.md) | A bus publishes telemetry directly to a Kafka topic. A single C# service consumes it and transforms each message into a maintenance work order, written as a commented YAML file. The message contract is documented in an [AsyncAPI](DirectToTopic.SingleConsumer/asyncapi.yaml) file. |
+| Demo Docs | Solution File | Description |
+|-----------|---------------|-------------|
+| [DirectToTopic.SingleConsumer](DirectToTopic.SingleConsumer/README.md) | [DirectToTopic.SingleConsumer.Slnx](DirectToTopic.SingleConsumer.slnx) | A bus publishes telemetry directly to a Kafka topic. A single C# service consumes it and transforms each message into a maintenance work order, written as a commented YAML file. The message contract is documented in an [AsyncAPI](DirectToTopic.SingleConsumer/asyncapi.yaml) file. |

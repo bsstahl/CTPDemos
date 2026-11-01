@@ -1,4 +1,4 @@
-namespace WorkOrderService;
+namespace WorkOrderService.Messages;
 
 public record WorkOrder(
     string WorkOrderId,

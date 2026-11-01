@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace WorkOrderService;
+namespace WorkOrderService.Messages;
 
 public record BusTelemetry(
     [property: JsonPropertyName("alertId"), JsonRequired] Guid AlertId,
