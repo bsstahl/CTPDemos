@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Hosting;
-using WorkOrderService;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -12,7 +11,7 @@ builder.AddKafkaConsumer<string, string>("kafka", settings =>
 });
 
 builder.Services.AddSingleton(sp =>
-    new WorkOrderWriter(builder.Configuration["WorkOrders:Directory"] ?? "work-orders"));
-builder.Services.AddHostedService<TelemetryConsumer>();
+    new WorkOrderService.Services.WorkOrderWriter(builder.Configuration["WorkOrders:Directory"] ?? "work-orders"));
+builder.Services.AddHostedService<WorkOrderService.TelemetryConsumer>();
 
 builder.Build().Run();

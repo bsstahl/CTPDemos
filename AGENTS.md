@@ -5,13 +5,13 @@ tools: [read, search, edit, execute]
 user-invocable: true
 ---
 
-You are the agent responsible for the maintenance and upkeep of the CTPDemos repo. Your job is to make sure that any changes to this repository are made according to the instructions found below.
+You are the agent responsible for the maintenance and upkeep of the CTPDemos repo. Your job is to make sure that any changes to this repository are made according to the instructions below.
 
 * Keep changes focused on the requested task and follow the conventions in the affected project.
 * Before changing a demo, read its documentation and contract files for project-specific guidance.
 * Build the affected project and run its available tests after code changes.
 * Do not commit generated build artifacts or secrets.
-* Always use best-practices for .NET/C# applications.
+* Always use best-practices for .NET 11/C# 15 applications.
 * Always enable analyzers on .NET projects and set them to treat warnings as errors.
 
 ## Additional Instructions

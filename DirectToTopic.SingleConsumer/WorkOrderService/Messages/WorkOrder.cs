@@ -1,6 +1,6 @@
 namespace WorkOrderService.Messages;
 
-public record WorkOrder(
+internal sealed record WorkOrder(
     string WorkOrderId,
     string BusId,
     DateTimeOffset CreatedAt,

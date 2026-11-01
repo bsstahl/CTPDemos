@@ -2,10 +2,11 @@ using System.Text;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 using WorkOrderService.Messages;
+using System.Globalization;
 
-namespace WorkOrderService;
+namespace WorkOrderService.Services;
 
-public class WorkOrderWriter(string directory)
+internal sealed class WorkOrderWriter(string directory)
 {
     private readonly ISerializer _serializer = new SerializerBuilder()
         .WithNamingConvention(CamelCaseNamingConvention.Instance)
@@ -19,7 +20,7 @@ public class WorkOrderWriter(string directory)
         var temporaryPath = Path.Combine(directory, $".{Guid.NewGuid():N}.tmp");
 
         var sb = new StringBuilder()
-            .AppendLine($"# Bus maintenance work order {order.WorkOrderId}")
+            .AppendLine(String.Create(CultureInfo.CurrentCulture, $"# Bus maintenance work order {order.WorkOrderId}"))
             .AppendLine("# Generated automatically from bus telemetry received on Kafka.")
             .AppendLine("# Priority: Urgent = safety-related finding, High = fault codes reported, Routine = no findings.")
             .AppendLine("# 'sourceTelemetry' is the unmodified data that triggered this order.")
@@ -27,7 +28,7 @@ public class WorkOrderWriter(string directory)
 
         try
         {
-            await File.WriteAllTextAsync(temporaryPath, sb.ToString(), ct);
+            await File.WriteAllTextAsync(temporaryPath, sb.ToString(), ct).ConfigureAwait(false);
             try
             {
                 File.Move(temporaryPath, path);

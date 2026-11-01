@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace WorkOrderService.Messages;
 
-public record BusTelemetry(
+internal sealed record BusTelemetry(
     [property: JsonPropertyName("alertId"), JsonRequired] Guid AlertId,
     [property: JsonPropertyName("busId"), JsonRequired] string BusId,
     [property: JsonPropertyName("timestamp"), JsonRequired] DateTimeOffset Timestamp,

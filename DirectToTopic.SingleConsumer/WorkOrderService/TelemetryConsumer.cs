@@ -2,10 +2,11 @@ using System.Text.Json;
 using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using WorkOrderService.Messages;
+using WorkOrderService.Services;
 
 namespace WorkOrderService;
 
-public class TelemetryConsumer(
+internal sealed class TelemetryConsumer(
     IConsumer<string, string> consumer,
     WorkOrderWriter writer,
     IConfiguration config,
@@ -27,7 +28,7 @@ public class TelemetryConsumer(
             {
                 await adminClient.CreateTopicsAsync([
                     new TopicSpecification { Name = topic, NumPartitions = 1, ReplicationFactor = 1 }
-                ]);
+                ]).ConfigureAwait(false);
             }
             catch (CreateTopicsException ex) when (
                 ex.Results.Count > 0
@@ -63,7 +64,7 @@ public class TelemetryConsumer(
                 }
 
                 var workOrder = WorkOrderFactory.Create(telemetry);
-                var path = await writer.WriteAsync(workOrder, ct);
+                var path = await writer.WriteAsync(workOrder, ct).ConfigureAwait(false);
                 if (path is null)
                     logger.LogInformation("Skipping duplicate alert {AlertId}", telemetry.AlertId);
                 else

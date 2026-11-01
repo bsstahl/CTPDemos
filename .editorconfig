@@ -1,0 +1,14 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+
+[*.cs]
+# CA1812: Avoid uninstantiated internal classes
+# Many modern frameworks (DI, serializers, EF, reflection, source generators)
+# instantiate types indirectly, so keep this as a suggestion.
+dotnet_diagnostic.CA1812.severity = suggestion

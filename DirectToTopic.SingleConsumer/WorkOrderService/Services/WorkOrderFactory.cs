@@ -1,8 +1,8 @@
 using WorkOrderService.Messages;
 
-namespace WorkOrderService;
+namespace WorkOrderService.Services;
 
-public static class WorkOrderFactory
+internal static class WorkOrderFactory
 {
     public static WorkOrder Create(BusTelemetry t)
     {
