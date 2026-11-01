@@ -46,8 +46,20 @@ public class TelemetryConsumer(
                 var result = consumer.Consume(ct);
                 if (result?.Message is null) continue;
 
+                if (result.Message.Value is null)
+                {
+                    logger.LogWarning("Skipping Kafka tombstone message");
+                    consumer.StoreOffset(result);
+                    continue;
+                }
+
                 var telemetry = JsonSerializer.Deserialize<BusTelemetry>(result.Message.Value);
-                if (telemetry is null) continue;
+                if (telemetry is null)
+                {
+                    logger.LogWarning("Skipping empty telemetry payload");
+                    consumer.StoreOffset(result);
+                    continue;
+                }
 
                 var workOrder = WorkOrderFactory.Create(telemetry);
                 var path = await writer.WriteAsync(workOrder, ct);
