@@ -4,7 +4,7 @@ Code samples and implementations of the Consume-Transform-Produce pattern
 ## Purpose
 Consume-Transform-Produce (CTP) is a pattern in which a service consumes a message, transforms it, and produces a result, which may be another message or a stored artifact. Each demo in this repo is a runnable example of the pattern in a different configuration, such as how the data enters the system and how many consumers process it.
 
-Demos are orchestrated with [.NET Aspire](https://aspire.dev), so you can run one with a single command. You need the .NET 10 SDK and a container runtime (Docker or Podman). Each demo folder has its own README with run instructions.
+Demos are orchestrated with [.NET Aspire](https://aspire.dev), so you can run one with a single command. You need the .NET 11 SDK and a container runtime (Docker or Podman). Each demo folder has its own README with run instructions.
 
 ## Demos
 

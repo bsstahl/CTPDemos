@@ -4,7 +4,7 @@ An Aspire AppHost starts a Kafka container (with Kafka UI) and a C# worker servi
 from the `bus-telemetry` topic and writes a maintenance work order as a commented YAML file to `DirectToTopic.SingleConsumer/work-orders/`.
 
 ## Run
-Requires the .NET 10 SDK and a container runtime (Docker/Podman).
+Requires the .NET 11 SDK and a container runtime (Docker/Podman).
 
     dotnet run --project DirectToTopic.SingleConsumer/AppHost
 
