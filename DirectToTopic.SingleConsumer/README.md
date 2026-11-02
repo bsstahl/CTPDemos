@@ -1,7 +1,21 @@
 # DirectToTopic.SingleConsumer – bus telemetry to work order
 
+This demo simulates a bus returning to a maintenance bay where it sends telemetry to indicate that it has a fault. In this example, the bus sends the message directly to a Kafka topic. In the [HttpProxy.SingleConsumer demo](../HttpProxy.SingleConsumer/README.md), a REST message is posted to an HTTP endpoint.
+
 An Aspire AppHost starts a Kafka container (with Kafka UI) and a C# worker service. The worker reads bus telemetry
 from the `bus-telemetry` topic and writes a maintenance work order as a commented YAML file to `DirectToTopic.SingleConsumer/work-orders/`.
+
+```mermaid
+flowchart LR
+    bus["Bus (external producer)"]
+    topic[("Kafka topic: bus-telemetry")]
+    worker["WorkOrderService"]
+    output[("Work order YAML file")]
+
+    bus -->|"Publish JSON telemetry"| topic
+    topic -->|"Consume JSON telemetry"| worker
+    worker -->|"Write maintenance work order"| output
+```
 
 ## Run
 Requires the .NET 11 SDK and a container runtime (Docker/Podman).

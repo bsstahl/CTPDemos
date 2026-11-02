@@ -1,13 +1,26 @@
 # HttpProxy.SingleConsumer – bus telemetry through a REST proxy to work order
 
-This is the [DirectToTopic.SingleConsumer](../DirectToTopic.SingleConsumer/README.md) demo with one change to message delivery:
-the bus sends an HTTP request to Kafka REST Proxy (`confluentinc/cp-kafka-rest`), which publishes the telemetry to Kafka.
-It models an external producer whose delivery mechanism we do not control. The producer remains outside the demo;
-the HTTP commands below stand in for the bus.
+This demo simulates a bus returning to a maintenance bay where it sends telemetry to indicate that it has a fault. In this example, a REST message is posted to an HTTP endpoint.
+
+This demo is identical to the [DirectToTopic.SingleConsumer](../DirectToTopic.SingleConsumer/README.md) demo with the one change being to how the message is delivered. It models an external producer whose delivery mechanism we do not control. The producer remains outside the demo; the HTTP commands below stand in for the bus.
 
 An Aspire AppHost starts Kafka (with Kafka UI), Kafka REST Proxy, and a C# worker service. The worker is unchanged:
 it reads JSON telemetry from the `bus-telemetry` topic and writes a maintenance work order as a commented YAML file to
 `HttpProxy.SingleConsumer/work-orders/`. No HTTP consumer or custom forwarding service is needed.
+
+```mermaid
+flowchart LR
+    bus["Bus (external producer)"]
+    proxy["Kafka REST Proxy"]
+    topic[("Kafka topic: bus-telemetry")]
+    worker["WorkOrderService"]
+    output[("Work order YAML file")]
+
+    bus -->|"HTTP POST /topics/bus-telemetry"| proxy
+    proxy -->|"Publish JSON telemetry"| topic
+    topic -->|"Consume JSON telemetry"| worker
+    worker -->|"Write maintenance work order"| output
+```
 
 ## Run
 Requires the .NET 11 SDK and a container runtime (Docker/Podman).
