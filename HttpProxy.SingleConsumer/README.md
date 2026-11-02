@@ -36,11 +36,21 @@ The producer sends the internal alert's stable `alertId` GUID, not a WorkOrderId
 service creates at most one work order for that alert. Repeating the request should not create another file.
 
 ## Kafka container
-The Kafka container uses Aspire's persistent lifetime, so it remains running when the AppHost stops and is reused on later runs. This preserves the container, not its data independently of that container; removing or recreating it may lose its topics and messages.
+Both demos use the same persistent container, `ctpdemos-kafka`, with host ports `9092` (clients) and `9093` (internal listener).
+Keep the Kafka name, image, ports, and environment settings identical in both AppHosts so switching demos reuses the running broker
+instead of recreating it. These ports must be free on the first run. Stop one AppHost before starting the other; Kafka stays running.
 
-When you no longer need it, find the Kafka container with `docker ps -a` (or `podman ps -a`) and remove it manually:
+The demos share the `bus-telemetry` topic and `work-order-service` consumer group, including committed offsets.
+Switching demos continues from those offsets rather than replaying previously consumed records. Use a new alert ID for a new reading.
+Running both workers together makes them compete for messages, not each receive a copy.
 
-    docker rm -f <container-id-or-name>
+This preserves the container, not its data independently of that container; removing or recreating it may lose its topics and messages.
+Older automatically named Kafka containers are not adopted or migrated; remove those separately with `docker rm -f <container-name>`
+(or `podman rm -f <container-name>`) if no longer needed.
+
+When you no longer need the shared broker, stop the AppHosts and remove it manually:
+
+    docker rm -f ctpdemos-kafka
 
 The REST Proxy container stops with the AppHost. Its HTTP endpoint is for local demonstration only; do not expose this
 unauthenticated, plaintext setup publicly.

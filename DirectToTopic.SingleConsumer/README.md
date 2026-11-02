@@ -13,11 +13,21 @@ Open the Aspire dashboard, then open Kafka UI and produce a message to `bus-tele
 A file such as `DirectToTopic.SingleConsumer/work-orders/Alert-6ba7b8109dad11d180b400c04fd430c8.yaml` appears. The telemetry producer is outside this demo's scope.
 
 ## Kafka container
-The Kafka container uses Aspire's persistent lifetime, so it remains running when the AppHost stops and is reused on later runs. This preserves the container, not its data independently of that container; removing or recreating it may lose its topics and messages.
+Both demos use the same persistent container, `ctpdemos-kafka`, with host ports `9092` (clients) and `9093` (internal listener).
+Keep the Kafka name, image, ports, and environment settings identical in both AppHosts so switching demos reuses the running broker
+instead of recreating it. These ports must be free on the first run. Stop one AppHost before starting the other; Kafka stays running.
 
-When you no longer need it, find the Kafka container with `docker ps -a` (or `podman ps -a`) and remove it manually:
+The demos share the `bus-telemetry` topic and `work-order-service` consumer group, including committed offsets.
+Switching demos continues from those offsets rather than replaying previously consumed records. Use a new alert ID for a new reading.
+Running both workers together makes them compete for messages, not each receive a copy.
 
-    docker rm -f <container-id-or-name>
+This preserves the container, not its data independently of that container; removing or recreating it may lose its topics and messages.
+Older automatically named Kafka containers are not adopted or migrated; remove those separately with `docker rm -f <container-name>`
+(or `podman rm -f <container-name>`) if no longer needed.
+
+When you no longer need the shared broker, stop the AppHosts and remove it manually:
+
+    docker rm -f ctpdemos-kafka
 
 ## Message contract
 The telemetry contract is documented in [asyncapi.yaml](asyncapi.yaml) (AsyncAPI 3.0): topic `bus-telemetry`,

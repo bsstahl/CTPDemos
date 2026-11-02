@@ -12,7 +12,7 @@ servers:
   local:
     host: localhost:9092
     protocol: kafka
-    description: Kafka container started by the Aspire AppHost (the host port is assigned by Aspire; see the dashboard).
+    description: Shared ctpdemos-kafka container started or reused by either demo's Aspire AppHost.
 
 channels:
   busTelemetry:
