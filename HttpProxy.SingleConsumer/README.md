@@ -1,0 +1,55 @@
+# HttpProxy.SingleConsumer – bus telemetry through a REST proxy to work order
+
+This is the [DirectToTopic.SingleConsumer](../DirectToTopic.SingleConsumer/README.md) demo with one change to message delivery:
+the bus sends an HTTP request to Kafka REST Proxy (`confluentinc/cp-kafka-rest`), which publishes the telemetry to Kafka.
+It models an external producer whose delivery mechanism we do not control. The producer remains outside the demo;
+the `curl` command below stands in for the bus.
+
+An Aspire AppHost starts Kafka (with Kafka UI), Kafka REST Proxy, and a C# worker service. The worker is unchanged:
+it reads JSON telemetry from the `bus-telemetry` topic and writes a maintenance work order as a commented YAML file to
+`HttpProxy.SingleConsumer/work-orders/`. No HTTP consumer or custom forwarding service is needed.
+
+## Run
+Requires the .NET 11 SDK and a container runtime (Docker/Podman).
+
+    dotnet run --project HttpProxy.SingleConsumer/AppHost
+
+Open the Aspire dashboard. Wait for `kafka-rest` to be healthy and for `work-order-service` to log
+`Listening for bus telemetry on topic bus-telemetry`; the worker creates the topic at startup.
+Copy the `kafka-rest` HTTP endpoint from the dashboard (Aspire assigns the host port), then publish a reading:
+
+```sh
+export KAFKA_REST_URL="http://localhost:<port-from-dashboard>"
+curl --fail-with-body --request POST "$KAFKA_REST_URL/topics/bus-telemetry" \
+  --header 'Content-Type: application/vnd.kafka.json.v2+json' \
+  --header 'Accept: application/vnd.kafka.v2+json' \
+  --data '{"records":[{"value":{"alertId":"6ba7b810-9dad-11d1-80b4-00c04fd430c8","busId":"B-42","timestamp":"2026-01-15T08:30:00Z","odometerKm":182340.5,"engineTempC":115,"brakePadThicknessMm":3.2,"faultCodes":["P0217"]}}]}'
+```
+
+The REST Proxy v2 JSON API requires the `records`/`value` envelope and media types shown above.
+Only the object inside `value` is written to Kafka, so the existing consumer receives the same JSON as in the direct-to-topic demo.
+A successful response contains an `offsets` entry with `error_code` and `error` both `null`; check these fields even if HTTP returns 200.
+Kafka UI can be used to inspect the resulting record, but use HTTP rather than Kafka UI to produce messages in this demo.
+
+A file such as `HttpProxy.SingleConsumer/work-orders/Alert-6ba7b8109dad11d180b400c04fd430c8.yaml` appears.
+The producer sends the internal alert's stable `alertId` GUID, not a WorkOrderId; reuse the same alert ID on retries so the
+service creates at most one work order for that alert. Repeating the request should not create another file.
+
+## Kafka container
+The Kafka container uses Aspire's persistent lifetime, so it remains running when the AppHost stops and is reused on later runs. This preserves the container, not its data independently of that container; removing or recreating it may lose its topics and messages.
+
+When you no longer need it, find the Kafka container with `docker ps -a` (or `podman ps -a`) and remove it manually:
+
+    docker rm -f <container-id-or-name>
+
+The REST Proxy container stops with the AppHost. Its HTTP endpoint is for local demonstration only; do not expose this
+unauthenticated, plaintext setup publicly.
+
+## Message contract
+The telemetry contract is documented in [asyncapi.yaml](asyncapi.yaml) (AsyncAPI 3.0): topic `bus-telemetry`,
+JSON payload. A sample message, also included in that document:
+
+    {"alertId":"6ba7b810-9dad-11d1-80b4-00c04fd430c8","busId":"B-42","timestamp":"2026-01-15T08:30:00Z","odometerKm":182340.5,"engineTempC":115,"brakePadThicknessMm":3.2,"faultCodes":["P0217"]}
+
+The consumer-side model is `WorkOrderService/Messages/BusTelemetry.cs`; keep it in sync with the document.
+The contract describes the Kafka record payload, not the HTTP envelope used to deliver it.

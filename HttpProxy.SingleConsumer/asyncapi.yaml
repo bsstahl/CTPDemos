@@ -1,0 +1,94 @@
+asyncapi: 3.0.0
+info:
+  title: Bus Telemetry
+  version: 1.0.0
+  description: >-
+    Telemetry sent by a bus over HTTP to Kafka REST Proxy, which publishes the JSON
+    value to a Kafka topic. The producer is outside this demo; WorkOrderService consumes
+    these unchanged messages and creates maintenance work orders. See README.md for
+    the REST Proxy request envelope and media types.
+
+servers:
+  local:
+    host: localhost:9092
+    protocol: kafka
+    description: Kafka container started by the Aspire AppHost (the host port is assigned by Aspire; see the dashboard).
+
+channels:
+  busTelemetry:
+    address: bus-telemetry
+    description: Topic carrying one telemetry message per bus reading.
+    messages:
+      busTelemetry:
+        $ref: '#/components/messages/BusTelemetry'
+
+operations:
+  publishBusTelemetry:
+    action: send
+    summary: Kafka REST Proxy publishes a telemetry reading received over HTTP from a bus.
+    channel:
+      $ref: '#/channels/busTelemetry'
+  receiveBusTelemetry:
+    action: receive
+    summary: WorkOrderService reads telemetry (consumer group work-order-service) and writes a work order.
+    channel:
+      $ref: '#/channels/busTelemetry'
+
+components:
+  messages:
+    BusTelemetry:
+      name: BusTelemetry
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/BusTelemetry'
+      examples:
+        - name: OverheatingWithFault
+          summary: Hot engine, worn brake pads and a fault code; produces an Urgent work order.
+          payload:
+            alertId: 6ba7b810-9dad-11d1-80b4-00c04fd430c8
+            busId: B-42
+            timestamp: '2026-01-15T08:30:00Z'
+            odometerKm: 182340.5
+            engineTempC: 115
+            brakePadThicknessMm: 3.2
+            faultCodes:
+              - P0217
+        - name: Healthy
+          summary: No findings; produces a Routine inspection work order.
+          payload:
+            alertId: 6ba7b811-9dad-11d1-80b4-00c04fd430c8
+            busId: B-07
+            timestamp: '2026-01-15T09:00:00Z'
+            odometerKm: 45210
+            engineTempC: 88
+            brakePadThicknessMm: 9.5
+  schemas:
+    BusTelemetry:
+      type: object
+      required: [alertId, busId, timestamp, odometerKm, engineTempC, brakePadThicknessMm]
+      properties:
+        alertId:
+          type: string
+          format: uuid
+          description: Unique internal-system alert identifier, reused when retrying the same alert to prevent duplicate work orders.
+        busId:
+          type: string
+          description: Unique identifier of the bus.
+        timestamp:
+          type: string
+          format: date-time
+          description: When the reading was taken (ISO 8601).
+        odometerKm:
+          type: number
+          description: Odometer reading in kilometers.
+        engineTempC:
+          type: number
+          description: Engine temperature in degrees Celsius. 110 or more triggers a cooling system inspection.
+        brakePadThicknessMm:
+          type: number
+          description: Remaining brake pad thickness in millimeters. 4 or less triggers a pad replacement.
+        faultCodes:
+          type: array
+          description: Active diagnostic fault codes, if any. Each one triggers a diagnosis task.
+          items:
+            type: string
