@@ -3,7 +3,7 @@
 This is the [DirectToTopic.SingleConsumer](../DirectToTopic.SingleConsumer/README.md) demo with one change to message delivery:
 the bus sends an HTTP request to Kafka REST Proxy (`confluentinc/cp-kafka-rest`), which publishes the telemetry to Kafka.
 It models an external producer whose delivery mechanism we do not control. The producer remains outside the demo;
-the `curl` command below stands in for the bus.
+the HTTP commands below stand in for the bus.
 
 An Aspire AppHost starts Kafka (with Kafka UI), Kafka REST Proxy, and a C# worker service. The worker is unchanged:
 it reads JSON telemetry from the `bus-telemetry` topic and writes a maintenance work order as a commented YAML file to
@@ -24,6 +24,21 @@ curl --fail-with-body --request POST "$KAFKA_REST_URL/topics/bus-telemetry" \
   --header 'Content-Type: application/vnd.kafka.json.v2+json' \
   --header 'Accept: application/vnd.kafka.v2+json' \
   --data '{"records":[{"value":{"alertId":"6ba7b810-9dad-11d1-80b4-00c04fd430c8","busId":"B-42","timestamp":"2026-01-15T08:30:00Z","odometerKm":182340.5,"engineTempC":115,"brakePadThicknessMm":3.2,"faultCodes":["P0217"]}}]}'
+```
+
+Or use PowerShell:
+
+```powershell
+$kafkaRestUrl = "http://localhost:<port-from-dashboard>"
+$request = @{
+    Uri = "$kafkaRestUrl/topics/bus-telemetry"
+    Method = 'Post'
+    ContentType = 'application/vnd.kafka.json.v2+json'
+    Headers = @{ Accept = 'application/vnd.kafka.v2+json' }
+    Body = '{"records":[{"value":{"alertId":"6ba7b810-9dad-11d1-80b4-00c04fd430c8","busId":"B-42","timestamp":"2026-01-15T08:30:00Z","odometerKm":182340.5,"engineTempC":115,"brakePadThicknessMm":3.2,"faultCodes":["P0217"]}}]}'
+}
+$response = Invoke-RestMethod @request
+$response.offsets | Format-Table partition, offset, error_code, error
 ```
 
 The REST Proxy v2 JSON API requires the `records`/`value` envelope and media types shown above.
