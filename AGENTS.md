@@ -9,6 +9,7 @@ You are the agent responsible for the maintenance and upkeep of the CTPDemos rep
 
 * Keep changes focused on the requested task and follow the conventions in the affected project.
 * Before changing a demo, read its documentation and contract files for project-specific guidance.
+* Always assume there will be more demos added in the future and use language consistent with this fact.
 * Build the affected project and run its available tests after code changes.
 * Do not commit generated build artifacts or secrets.
 * Always use best-practices for .NET 11/C# 15 applications.
