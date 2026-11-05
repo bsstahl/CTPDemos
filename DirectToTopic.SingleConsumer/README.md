@@ -84,6 +84,10 @@ Both demos use the same persistent container, `ctpdemos-kafka`, with host ports 
 Keep the Kafka name, image, ports, and environment settings identical in both AppHosts so switching demos reuses the running broker
 instead of recreating it. These ports must be free on the first run. Stop one AppHost before starting the other; Kafka stays running.
 
+The bus CLI, the worker's consumer, and the worker's topic-admin client force Kafka connections to use IPv4. On some machines,
+`localhost` resolves to IPv6 (`::1`) first, but the host-facing Kafka endpoint in this setup is reached over IPv4. If a client
+chooses the IPv6 address, it may fail to connect; selecting IPv4 avoids that address-family mismatch.
+
 The demos share the `bus-telemetry` topic and `work-order-service` consumer group, including committed offsets.
 Switching demos continues from those offsets rather than replaying previously consumed records. Use a new alert ID for a new reading.
 Running both workers together makes them compete for messages, not each receive a copy.
