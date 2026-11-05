@@ -3,8 +3,8 @@ info:
   title: Bus Telemetry
   version: 1.0.0
   description: >-
-    Telemetry published by a bus directly to a Kafka topic. The producer is outside
-    this demo; WorkOrderService consumes these messages and creates maintenance work orders.
+    Telemetry published directly to a Kafka topic by this demo's bus CLI, run separately
+    from Aspire. WorkOrderService consumes these messages and creates maintenance work orders.
 
 servers:
   local:
