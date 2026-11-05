@@ -18,6 +18,7 @@ internal static class TelemetryPublisher
         var config = new ProducerConfig
         {
             BootstrapServers = BootstrapServers,
+            BrokerAddressFamily = BrokerAddressFamily.V4,
             Acks = Acks.All,
             EnableIdempotence = true,
             MessageTimeoutMs = 10_000,

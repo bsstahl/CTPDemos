@@ -21,7 +21,8 @@ internal sealed class TelemetryConsumer(
         using (var adminClient = new AdminClientBuilder(new AdminClientConfig
         {
             BootstrapServers = config.GetConnectionString("kafka")
-                ?? throw new InvalidOperationException("Kafka connection string is unavailable")
+                ?? throw new InvalidOperationException("Kafka connection string is unavailable"),
+            BrokerAddressFamily = BrokerAddressFamily.V4,
         }).Build())
         {
             try
