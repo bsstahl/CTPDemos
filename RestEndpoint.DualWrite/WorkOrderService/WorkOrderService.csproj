@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <LangVersion>15.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>All</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.14" />
+    <InternalsVisibleTo Include="WorkOrderService.Tests" />
+    <Compile Include="..\..\DirectToTopic.SingleConsumer\WorkOrderService\Messages\WorkOrder.cs" Link="Messages\WorkOrder.cs" />
+    <Compile Include="..\..\DirectToTopic.SingleConsumer\WorkOrderService\Services\WorkOrderFactory.cs" Link="Services\WorkOrderFactory.cs" />
+  </ItemGroup>
+</Project>

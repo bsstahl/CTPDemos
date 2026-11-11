@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:5080
+@alertId = 3830c273-0c57-40bd-8bc4-a6d339d10211
+@workOrderId = replace-with-workOrderId-from-response
+@vendorError = false
+@dbUpdateError = false
+@dbCommitError = false
+
+### Creates a new work order on every invocation, even with the same alertId.
+POST {{baseUrl}}/telemetry
+Content-Type: application/json
+
+{
+  "alertId": "{{alertId}}",
+  "busId": "B-42",
+  "timestamp": "2026-01-15T08:30:00Z",
+  "odometerKm": 182340.5,
+  "engineTempC": 115,
+  "brakePadThicknessMm": 3.2,
+  "faultCodes": ["P0217"],
+  "vendorError": {{vendorError}},
+  "dbUpdateError": {{dbUpdateError}},
+  "dbCommitError": {{dbCommitError}}
+}
+
+### Set vendorError above to true to request httpbin's HTTP 503 endpoint.
+### The service returns 502, but the work order stays saved.
+### dbUpdateError simulates a failed write (500, no row inserted).
+### dbCommitError is ignored: this demo has no explicit transaction.
+
+### Inspect the saved work order, including after a failed vendor POST.
+GET {{baseUrl}}/work-orders/{{workOrderId}}
+
+### Missing work order: 404.
+GET {{baseUrl}}/work-orders/missing
+
+### Missing required telemetry fields: 400, no writes.
+POST {{baseUrl}}/telemetry
+Content-Type: application/json
+
+{}
+
+### OpenAPI contract.
+GET {{baseUrl}}/openapi/v1.json
+
+### Local service health (not vendor availability).
+GET {{baseUrl}}/health

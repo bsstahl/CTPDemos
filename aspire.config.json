@@ -1,0 +1,5 @@
+{
+    "appHost": {
+        "path": "RestEndpoint.DualWrite\\AppHost\\AppHost.csproj"
+    }
+}

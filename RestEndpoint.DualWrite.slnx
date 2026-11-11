@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/RestEndpoint.DualWrite/">
+    <Project Path="RestEndpoint.DualWrite/AppHost/AppHost.csproj" />
+    <Project Path="RestEndpoint.DualWrite/Bus/Bus.csproj" />
+    <Project Path="RestEndpoint.DualWrite/WorkOrderService/WorkOrderService.csproj" />
+    <Project Path="RestEndpoint.DualWrite/WorkOrderService.Tests/WorkOrderService.Tests.csproj" />
+  </Folder>
+</Solution>
